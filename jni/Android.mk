@@ -19,7 +19,9 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE    := Lua
 
-LUADIR 			= Classes/lua
+CLSDIR 			= Classes
+
+LUADIR 			= $(CLSDIR)/lua
 
 LUASRC 			:= $(LUADIR)/lapi.c
 LUASRC 			+= $(LUADIR)/lauxlib.c
@@ -57,16 +59,27 @@ LUASRC 			+= $(LUADIR)/lutf8lib.c
 LUASRC 			+= $(LUADIR)/lvm.c
 LUASRC 			+= $(LUADIR)/lzio.c
 
-LOCAL_LDLIBS    := -llog
+LUANATIVEDIR 	= $(CLSDIR)/luanative
+
+LOCAL_LDLIBS    := -llog -ldl
 
 LOCAL_CFLAGS	+= -O2 -Wall -Wextra
 LOCAL_CFLAGS	:= -D"lua_getlocaledecpoint()=('.')"
 LOCAL_CFLAGS	+= -DLUA_USE_POSIX
-LOCAL_CFLAGS	+= -ldl
 #LOCAL_CFLAGS	+= -DLUA_USE_DLOPEN
+
+LOCAL_C_INCLUDES 	:= $(LOCAL_PATH)
+LOCAL_C_INCLUDES	+= $(LOCAL_PATH)/$(CLSDIR)
+LOCAL_C_INCLUDES	+= $(LOCAL_PATH)/$(LUADIR)
+LOCAL_C_INCLUDES	+= $(LOCAL_PATH)/$(LUANATIVEDIR)
 
 LOCAL_SRC_FILES := $(LUASRC) main-jni.c
 LOCAL_SRC_FILES += log2.c
+
+# luanative
+LOCAL_SRC_FILES += $(LUANATIVEDIR)/com_lua_LuaNative.c
+LOCAL_SRC_FILES += $(LUANATIVEDIR)/lua_print.c
+LOCAL_SRC_FILES += $(LUANATIVEDIR)/main-lua.c
 
 include $(BUILD_SHARED_LIBRARY)
 
