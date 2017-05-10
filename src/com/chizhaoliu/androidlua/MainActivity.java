@@ -1,9 +1,13 @@
 package com.chizhaoliu.androidlua;
 
+import java.io.File;
+
 import com.lua.LuaNative;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,6 +19,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
+        LuaNative.init(getApplicationContext(),"Lua",this.getExternalFilesDir(null).getAbsolutePath() + "/Lua");
         if(LuaNative.start()){
         	new Thread("lua-thread"){
         		@Override

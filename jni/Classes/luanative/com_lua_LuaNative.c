@@ -6,9 +6,22 @@
 
 #include <unistd.h>
 
-#include "main-lua.h"
+#include "lua_main.h"
 
-static lua_State * m_Lua = NULL;
+void JNICALL Java_com_lua_LuaNative_init(JNIEnv *env, jclass c, jobject ctx, jstring iLuaPath, jstring eLuaPath){
+	if(gCtx == NULL){
+		gCtx = (*env)->NewGlobalRef(env,ctx);
+
+		jclass cls = (*env)->GetObjectClass(env,ctx);
+		jmethodID mid = (*env)->GetMethodID(env,cls,"getAssets","()Landroid/content/res/AssetManager;");
+		jobject obj = (*env)->CallObjectMethod(env,ctx,mid);
+		gAssetMgr = AAssetManager_fromJava(env,obj);
+
+		gInternalLuaPath = (*env)->GetStringUTFChars(env, iLuaPath, 0);
+		gExternalLuaPath = (*env)->GetStringUTFChars(env, eLuaPath, 0);
+
+	}
+}
 
 jboolean JNICALL Java_com_lua_LuaNative_start(JNIEnv *env, jclass c)
 {

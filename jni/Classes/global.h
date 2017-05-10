@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <jni.h>
 #include <android/log.h>
+#include <android/asset_manager_jni.h>
 
 #define LOGTAG "lua-jni"
 
@@ -17,5 +18,11 @@
 
 extern JavaVM* gJVM;
 extern JNIEnv* gEnv;
+
+extern jobject gCtx;
+extern jobject gAMer;
+extern AAssetManager * gAssetMgr;
+extern const char * gInternalLuaPath;
+extern const char * gExternalLuaPath;
 
 #endif // __GLOBAL_H__

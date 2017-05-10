@@ -2,6 +2,10 @@
 
 JavaVM* gJVM = NULL;
 JNIEnv* gEnv = NULL;
+jobject gCtx = NULL;
+AAssetManager * gAssetMgr = NULL;
+const char * gInternalLuaPath = NULL;
+const char * gExternalLuaPath = NULL;
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved)
 {

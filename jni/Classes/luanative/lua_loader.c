@@ -4,15 +4,17 @@
 
 #include <string.h>
 
+#include "global.h"
 #include "lua_file_io.h"
 
-static const char * BYTECODE_FILE_EXT       = ".luac"
-static const char * NOT_BYTECODE_FILE_EXT   = ".lua"
+static const char * BYTECODE_FILE_EXT       = ".luac";
+static const char * NOT_BYTECODE_FILE_EXT   = ".lua";
 
 static int lua_loader(lua_State *L)
 {
     char filename[256] = {0};
-    filename = luaL_checkstring(L, 1);
+    const char * fn = luaL_checkstring(L, 1);
+    strcat(filename,fn);
 
     int mod = -1;
     
@@ -50,40 +52,52 @@ static int lua_loader(lua_State *L)
 
     if(mod == 0){
         strcat(filename,BYTECODE_FILE_EXT);
-    }else if(mod == 1){
+    }else{
         strcat(filename,NOT_BYTECODE_FILE_EXT);
     }
-    
-    if(file_util_internal_exists(filename)){
 
-    }else if(file_util_external_exists(filename)){
+    void * data = NULL;
+    long dataLen = -1;
 
+    if(data == NULL && file_util_external_exists(filename)){
+        data = file_util_external_read(filename,&dataLen);
     }
-    
-    return 1;
+
+    if(data == NULL && file_util_internal_exists(filename)){
+        data = file_util_internal_read(filename,&dataLen);
+    }
+
+    if(data != NULL){
+        luaL_loadbuffer(L, (const char *)data, dataLen, filename);
+        free(data);
+        return 1;
+    }else{
+        LOGE("can not find lua file:%s",filename);
+        return 0;
+    }
 }
 
-void lua_register_loader(lua_State * L, lua_CFunction func)
+static void _register_loader(lua_State * L, lua_CFunction func)
 {
     if (!func) return;
-    
-    // stack content after the invoking of the function
-    // get loader table
-    lua_getglobal(L, "package");                                  /* L: package */
-    lua_getfield(L, -1, "loaders");                               /* L: package, loaders */
-    
-    // insert loader into index 2
-    lua_pushcfunction(L, func);                                   /* L: package, loaders, func */
-    for (int i = (int)(lua_rawlen(L, -2) + 1); i > 2; --i)
+
+    lua_getglobal(L, "package");
+    lua_getfield(L, -1, "searchers");
+
+    lua_pushcfunction(L, func);  
+    int i;                                 
+    for (i = (int)(lua_rawlen(L, -2) + 1); i > 2; --i)
     {
-        lua_rawgeti(L, -2, i - 1);                                /* L: package, loaders, func, function */
-        // we call lua_rawgeti, so the loader table now is at -3
-        lua_rawseti(L, -3, i);                                    /* L: package, loaders, func */
+        lua_rawgeti(L, -2, i - 1);
+        lua_rawseti(L, -3, i);
     }
-    lua_rawseti(L, -2, 2);                                        /* L: package, loaders */
-    
-    // set loaders into package
-    lua_setfield(L, -2, "loaders");                               /* L: package */
+    lua_rawseti(L, -2, 2);
+
+    lua_setfield(L, -2, "searchers");
     
     lua_pop(L, 1);
+}
+
+void lua_register_loader(lua_State * L){
+    _register_loader(L,lua_loader);
 }

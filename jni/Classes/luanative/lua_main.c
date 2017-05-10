@@ -5,6 +5,8 @@
 #include "lauxlib.h"
 
 #include "lua_print.h"
+#include "lua_file_io.h"
+#include "lua_loader.h"
 
 static lua_State * m_Lua = NULL;
 static int b_pause = 0;
@@ -19,13 +21,14 @@ unsigned char lua_create(){
 			LOGI("%s","new a lua state!");
 			luaL_openlibs(m_Lua);
 
+			lua_register_loader(m_Lua);
 			lua_register_print(m_Lua);
 
-			int ret = luaL_dostring(m_Lua,"print('hello lua jni!')");
+			int ret = luaL_dostring(m_Lua,"require 'main'");
 			if(ret != 0){
 				LOGE("%s",luaL_checkstring(m_Lua,-1));
 			}
-			
+
 			return 1;
 		}
 	}
@@ -46,9 +49,15 @@ void lua_on_destroy(){
 	}
 }
 int lua_on_loop(long dt){
+	int gret = 0;
 	if(m_Lua != NULL){
 		if(b_pause == 0){
-			
+			lua_getglobal(m_Lua,"loop");
+			lua_pushnumber(m_Lua,dt);
+			gret = lua_pcall(m_Lua,1,0,0);
+			if(gret != 0){
+				lua_pop(m_Lua,1);
+			}
 		}
 		return 1;
 	}else{
