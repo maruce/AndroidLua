@@ -1,15 +1,9 @@
 package com.chizhaoliu.androidlua;
 
-import java.io.File;
-
 import com.lua.LuaNative;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 
 public class MainActivity extends Activity {
@@ -28,6 +22,7 @@ public class MainActivity extends Activity {
         		}
         	}.start();
         }
+        
     }
     
     @Override

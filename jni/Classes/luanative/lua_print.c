@@ -88,6 +88,9 @@ int lua_register_print(lua_State * L){
 	lua_pushcfunction(L,lua_print);
 	lua_setglobal(L,"print");
 
+    lua_getglobal(L,"print");
+    lua_setglobal(L,"printi");
+
 	lua_pushcfunction(L,lua_print_error);
 	lua_setglobal(L,"printe");
 
