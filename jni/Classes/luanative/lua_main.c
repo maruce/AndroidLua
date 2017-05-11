@@ -8,6 +8,8 @@
 #include "lua_file_io.h"
 #include "lua_loader.h"
 
+#include "lua_to_java.h"
+
 static lua_State * m_Lua = NULL;
 static int b_pause = 0;
 
@@ -29,10 +31,12 @@ unsigned char lua_create(){
 				LOGE("%s",luaL_checkstring(m_Lua,-1));
 			}
 
+			lua_to_java_test();
+
 			return 1;
 		}
 	}
-
+	
 	return 0;
 }
 

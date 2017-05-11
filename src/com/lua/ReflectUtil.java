@@ -3,6 +3,8 @@ package com.lua;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import android.util.Log;
+
 public class ReflectUtil {
 	
 	public static Object StaticCall(String cls, String method){
@@ -287,7 +289,7 @@ public class ReflectUtil {
 		}
 		return ret;
 	}
-	public static boolean StaticSet(Object obj,String arg,Object value){
+	public static boolean Set(Object obj,String arg,Object value){
 		boolean ret = false;
 		
 		Class c = obj.getClass();
@@ -306,7 +308,7 @@ public class ReflectUtil {
 		}
 		return ret;
 	}
-	public static boolean StaticSetD(Object obj,String arg,Object value){
+	public static boolean SetD(Object obj,String arg,Object value){
 		boolean ret = false;
 		
 		Class c = obj.getClass();
